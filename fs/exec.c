@@ -178,30 +178,8 @@ static unsigned long change_ldt(unsigned long text_size,unsigned long * page)
 
 /*
  * 'do_execve()' executes a new program.
-
- High Addr
- -----------------
- 以下5个寄存器由int指令入栈
- %ss
- %esp	     :int 0x80()中断返回的堆栈，eip[3] <-|
- %eflags								eip[2] <-|
- %cs									eip[1] <-|
- %eip		 :int 0x80()中断返回地址，         eip[0] <-|
-												 |
- %ds											 |
- %es											 |
- %fs											 |
- %edx		 :envp_rc，参数3，char ** envp		     |
- %ecx		 :argv_rc，参数2，char ** argv	    	 |
- %ebx		 :"/bin/sh",参数1，char * filename	     |
- %eax		 :int 0x80()中断返回值，long tmp	         |
- %eip(%esp)：	 unsigned long * eip ------------|
-
- -----------------
- Low Addr */
- 
-int do_execve(unsigned long * eip/*point to %eip,%cs,%eflags,%esp,%ss*/,
-	long tmp,char * filename,
+ */
+int do_execve(unsigned long * eip,long tmp,char * filename,
 	char ** argv, char ** envp)
 {
 	struct m_inode * inode;
@@ -214,9 +192,9 @@ int do_execve(unsigned long * eip/*point to %eip,%cs,%eflags,%esp,%ss*/,
 	int sh_bang = 0;
 	unsigned long p=PAGE_SIZE*MAX_ARG_PAGES-4;
 
-	if ((0xffff & eip[1]) != 0x000f)/*eip[1] = cs, 只能从usr调入*/
+	if ((0xffff & eip[1]) != 0x000f)
 		panic("execve called from supervisor mode");
-	for (i=0 ; i<MAX_ARG_PAGES ; i++)	/* clear page-table for argv and envp */
+	for (i=0 ; i<MAX_ARG_PAGES ; i++)	/* clear page-table */
 		page[i]=0;
 	if (!(inode=namei(filename)))		/* get executables inode */
 		return -ENOENT;
@@ -224,7 +202,7 @@ int do_execve(unsigned long * eip/*point to %eip,%cs,%eflags,%esp,%ss*/,
 	envc = count(envp);
 	
 restart_interp:
-	if (!S_ISREG(inode->i_mode)) {	/* must be regular file(not block,char,dir,pipe) */
+	if (!S_ISREG(inode->i_mode)) {	/* must be regular file */
 		retval = -EACCES;
 		goto exec_error2;
 	}
@@ -240,15 +218,11 @@ restart_interp:
 		retval = -ENOEXEC;
 		goto exec_error2;
 	}
-
-	//read exec file header to bh from RAMDISK
 	if (!(bh = bread(inode->i_dev,inode->i_zone[0]))) {
 		retval = -EACCES;
 		goto exec_error2;
 	}
 	ex = *((struct exec *) bh->b_data);	/* read exec-header */
-
-	//处理shell脚本
 	if ((bh->b_data[0] == '#') && (bh->b_data[1] == '!') && (!sh_bang)) {
 		/*
 		 * This section does the #! interpretation.
@@ -322,12 +296,9 @@ restart_interp:
 		goto restart_interp;
 	}
 	brelse(bh);
-
-	//
-	if (N_MAGIC(ex) != ZMAGIC/*必须ZMAGIC*/ || 
-		ex.a_trsize || ex.a_drsize/*文件不能包含“重定向信息”*/ ||
-		ex.a_text+ex.a_data+ex.a_bss>0x3000000/*文件代码+数据+堆栈长度不能太大*/ ||
-		inode->i_size < ex.a_text+ex.a_data+ex.a_syms+N_TXTOFF(ex)/*不能超过文件数据size*/) {
+	if (N_MAGIC(ex) != ZMAGIC || ex.a_trsize || ex.a_drsize ||
+		ex.a_text+ex.a_data+ex.a_bss>0x3000000 ||
+		inode->i_size < ex.a_text+ex.a_data+ex.a_syms+N_TXTOFF(ex)) {
 		retval = -ENOEXEC;
 		goto exec_error2;
 	}
@@ -354,35 +325,24 @@ restart_interp:
 		if ((current->close_on_exec>>i)&1)
 			sys_close(i);
 	current->close_on_exec = 0;
-		
-	free_page_tables(get_base(current->ldt[1]),get_limit(0x0f));//cs
-	free_page_tables(get_base(current->ldt[2]),get_limit(0x17));//ds
+	free_page_tables(get_base(current->ldt[1]),get_limit(0x0f));
+	free_page_tables(get_base(current->ldt[2]),get_limit(0x17));
 	if (last_task_used_math == current)
 		last_task_used_math = NULL;
 	current->used_math = 0;
-	
 	p += change_ldt(ex.a_text,page)-MAX_ARG_PAGES*PAGE_SIZE;
-	
 	p = (unsigned long) create_tables((char *)p,argc,envc);
 	current->brk = ex.a_bss +
-		(current->end_data = ex.a_data + (current->end_code = ex.a_text));
-	/*
-		start_code : nr * 0x400,0000
-		end_code   : a_text
-		end_data   : a_text + a_data
-		brk		   : a_text + a_data + a_bss
-		
-		start_stack:
-	*/
+		(current->end_data = ex.a_data +
+		(current->end_code = ex.a_text));
 	current->start_stack = p & 0xfffff000;
 	current->euid = e_uid;
 	current->egid = e_gid;
 	i = ex.a_text+ex.a_data;
 	while (i&0xfff)
 		put_fs_byte(0,(char *) (i++));
-	
-	eip[0] = ex.a_entry;		/* eip after iret, magic happens :-) ,一般 0x40,0xx0*/
-	eip[3] = p;					/* stack pointer after iret*/
+	eip[0] = ex.a_entry;		/* eip, magic happens :-) */
+	eip[3] = p;			/* stack pointer */
 	return 0;
 exec_error2:
 	iput(inode);

@@ -48,22 +48,14 @@ struct i387_struct {
 	long	st_space[20];	/* 8*10 bytes for each FP-reg = 80 bytes */
 };
 
-//https://blog.csdn.net/q1007729991/article/details/52650822
-struct tss_struct {//used by call,trap,intr
+struct tss_struct {
 	long	back_link;	/* 16 high bits zero */
-
-	//ring0, process context.stack
 	long	esp0;
 	long	ss0;		/* 16 high bits zero */
-
-	//ring1
 	long	esp1;
 	long	ss1;		/* 16 high bits zero */
-
-	//ring2
 	long	esp2;
 	long	ss2;		/* 16 high bits zero */
-
 	long	cr3;
 	long	eip;
 	long	eflags;
@@ -88,10 +80,7 @@ struct task_struct {
 	long state;	/* -1 unrunnable, 0 runnable, >0 stopped */
 	long counter;
 	long priority;
-	//发送方：由其它进程中的syscall、中断的ISP修改
-	//检测方：任何syscall或Timer ISP返回前，检测current->signal值，
-	long signal;//进程收到的signal
-	
+	long signal;
 	struct sigaction sigaction[32];
 	long blocked;	/* bitmap of masked signals */
 /* various fields */
@@ -109,9 +98,9 @@ struct task_struct {
 	struct m_inode * pwd;
 	struct m_inode * root;
 	struct m_inode * executable;
-	unsigned long close_on_exec;//执行“executable”时，需要close的filp位图
+	unsigned long close_on_exec;
 	struct file * filp[NR_OPEN];
-/* ldt for this task (0 - zero) (1 - cs) (2 - ds&ss) */
+/* ldt for this task 0 - zero 1 - cs 2 - ds&ss */
 	struct desc_struct ldt[3];
 /* tss for this task */
 	struct tss_struct tss;
@@ -131,22 +120,14 @@ struct task_struct {
 /* math */	0, \
 /* fs info */	-1,0022,NULL,NULL,NULL,0, \
 /* filp */	{NULL,}, \
-
-	/* ldt */
 	{ \
 		{0,0}, \
-		{0x9f,0xc0fa00}, \ /*user code seg -> addr0x0-0x9f*/
-		{0x9f,0xc0f200}, \ /*user data seg -> addr0x0-0x9f*/
+/* ldt */	{0x9f,0xc0fa00}, \
+		{0x9f,0xc0f200}, \
 	}, \
-
-	/*tss*/	
-	{	0,\ 
-		PAGE_SIZE+(long)&init_task,\/*ring0.esp: high addr of task_struct's page*/
-		0x10,\						/*ring0.ss:  gdt.entry2, gdt, RPL=00*/
-		0,0,0,0,\
-		(long)&pg_dir,\				/*cr3 = pg_dir*/
+/*tss*/	{0,PAGE_SIZE+(long)&init_task,0x10,0,0,0,0,(long)&pg_dir,\
 	 0,0,0,0,0,0,0,0, \
-	 0,0,0x17,0x17,0x17,0x17,0x17,0x17, \/*gdt.entry2, ldt, RPL=3*/
+	 0,0,0x17,0x17,0x17,0x17,0x17,0x17, \
 	 _LDT(0),0x80000000, \
 		{} \
 	}, \
@@ -170,8 +151,8 @@ extern void wake_up(struct task_struct ** p);
  * 4-TSS0, 5-LDT0, 6-TSS1 etc ...
  */
 #define FIRST_TSS_ENTRY 4
-#define FIRST_LDT_ENTRY (FIRST_TSS_ENTRY+1)						//		     			       GDT-|  |-RPL=00
-#define _TSS(n) ((((unsigned long) n)<<4)+(FIRST_TSS_ENTRY<<3))//seg DT selector:xxxxxxxx,xxxx,x 0 00
+#define FIRST_LDT_ENTRY (FIRST_TSS_ENTRY+1)
+#define _TSS(n) ((((unsigned long) n)<<4)+(FIRST_TSS_ENTRY<<3))
 #define _LDT(n) ((((unsigned long) n)<<4)+(FIRST_LDT_ENTRY<<3))
 #define ltr(n) __asm__("ltr %%ax"::"a" (_TSS(n)))
 #define lldt(n) __asm__("lldt %%ax"::"a" (_LDT(n)))
@@ -187,21 +168,19 @@ __asm__("str %%ax\n\t" \
  * This also clears the TS-flag if the task we switched to has used
  * tha math co-processor latest.
  */
- //https://blog.csdn.net/smallmuou/article/details/6837087
 #define switch_to(n) {\
 struct {long a,b;} __tmp; \
 __asm__("cmpl %%ecx,_current\n\t" \
 	"je 1f\n\t" \
 	"movw %%dx,%1\n\t" \
 	"xchgl %%ecx,_current\n\t" \
-	"ljmp %0\n\t" \ /*save old's tss, use new's tss: %0 -> high16_selector,low32_offset*/
+	"ljmp %0\n\t" \
 	"cmpl %%ecx,_last_task_used_math\n\t" \
 	"jne 1f\n\t" \
 	"clts\n" \
 	"1:" \
-	::"m" (*&__tmp.a),\ /*low32_offset = 0*/
-	   "m" (*&__tmp.b), \/*high16_seg_selector = _TSS(n)*/
-	   "d" (_TSS(n)),"c" ((long) task[n])); \
+	::"m" (*&__tmp.a),"m" (*&__tmp.b), \
+	"d" (_TSS(n)),"c" ((long) task[n])); \
 }
 
 #define PAGE_ALIGN(n) (((n)+0xfff)&0xfffff000)

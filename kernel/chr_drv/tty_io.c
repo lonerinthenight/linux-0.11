@@ -97,15 +97,15 @@ struct tty_struct tty_table[] = {
  * them. Currently not done.
  */
 struct tty_queue * table_list[]={
-	&tty_table[0].read_q, &tty_table[0].write_q,	/*display console*/
-	&tty_table[1].read_q, &tty_table[1].write_q, 	/*RS232_1*/
-	&tty_table[2].read_q, &tty_table[2].write_q		/*RS232_1*/
+	&tty_table[0].read_q, &tty_table[0].write_q,
+	&tty_table[1].read_q, &tty_table[1].write_q,
+	&tty_table[2].read_q, &tty_table[2].write_q
 	};
 
 void tty_init(void)
 {
-	rs_init();//RS-232
-	con_init();//console display,keyboard
+	rs_init();
+	con_init();
 }
 
 void tty_intr(struct tty_struct * tty, int mask)
@@ -255,8 +255,7 @@ int tty_read(unsigned channel, char * buf, int nr)
 			break;
 		if (EMPTY(tty->secondary) || (L_CANON(tty) &&
 		!tty->secondary.data && LEFT(tty->secondary)>20)) {
-			
-			sleep_if_empty(&tty->secondary);//make "sh" sleep on interruptable
+			sleep_if_empty(&tty->secondary);
 			continue;
 		}
 		do {

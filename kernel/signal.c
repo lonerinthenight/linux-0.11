@@ -101,12 +101,12 @@ void do_signal(long signr,long eax, long ebx, long ecx, long edx,
 	}
 	if (sa->sa_flags & SA_ONESHOT)
 		sa->sa_handler = NULL;
-	*(&eip) = sa_handler;// after "_system_call" return, execute "sa_handler"(not sys_caller)
+	*(&eip) = sa_handler;
 	longs = (sa->sa_flags & SA_NOMASK)?7:8;
 	*(&esp) -= longs;
-	verify_area(esp,longs*4);	//"sa_handler" 's esp(not sys_caller's )
+	verify_area(esp,longs*4);
 	tmp_esp=esp;
-	put_fs_long((long) sa->sa_restorer,tmp_esp++);// sa_handler()函数返回后，将从sa->sa_restorer开始执行
+	put_fs_long((long) sa->sa_restorer,tmp_esp++);
 	put_fs_long(signr,tmp_esp++);
 	if (!(sa->sa_flags & SA_NOMASK))
 		put_fs_long(current->blocked,tmp_esp++);

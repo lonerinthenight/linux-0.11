@@ -94,7 +94,7 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	p->tss.ss0 = 0x10;
 	p->tss.eip = eip;
 	p->tss.eflags = eflags;
-	p->tss.eax = 0;	//child process's return val always = 0
+	p->tss.eax = 0;
 	p->tss.ecx = ecx;
 	p->tss.edx = edx;
 	p->tss.ebx = ebx;
@@ -118,14 +118,14 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 		return -EAGAIN;
 	}
 	for (i=0; i<NR_OPEN;i++)
-		if (f=p->filp[i])	//opened file's inode.count
+		if (f=p->filp[i])
 			f->f_count++;
 	if (current->pwd)
-		current->pwd->i_count++;	//pwd's inode.count
+		current->pwd->i_count++;
 	if (current->root)
-		current->root->i_count++;	//root's inode.count
+		current->root->i_count++;
 	if (current->executable)
-		current->executable->i_count++;	//execute file's inode.count
+		current->executable->i_count++;
 	set_tss_desc(gdt+(nr<<1)+FIRST_TSS_ENTRY,&(p->tss));
 	set_ldt_desc(gdt+(nr<<1)+FIRST_LDT_ENTRY,&(p->ldt));
 	p->state = TASK_RUNNING;	/* do this last, just in case */

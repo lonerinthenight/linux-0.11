@@ -93,30 +93,18 @@ struct d_inode {
 struct m_inode {
 	unsigned short i_mode;
 	unsigned short i_uid;
-	unsigned long i_size;/*file data size，（对于pipe类型文件，指向管道存储数据的物理内存页）*/
+	unsigned long i_size;
 	unsigned long i_mtime;
 	unsigned char i_gid;
-	unsigned char i_nlinks;/*硬连接计数*/
-	unsigned short i_zone[9];/*file data block num(普通文件) 或 block_dev_id（设备文件）*/
-	/* 对于pipe类型文件，i_zone[0]为管道head指示器（写入位置），i_zone[1]为管道tail指示器（读取位置）
-	i_zone[0] -> data_block0
-	i_zone[1] -> data_block1
-	i_zone[2] -> data_block2
-	i_zone[3] -> data_block3
-	i_zone[4] -> data_block4
-	i_zone[5] -> data_block5
-	i_zone[6] -> data_block6
-	i_zone[7] -> data_block_of_block0 -> 512个data_blocks
-	i_zone[8] -> data_block_of_block_of_block0 -> 512个data_block_of_blocks -> 512*512个data_blocks
-	*/
-	
-	/* these are in memory also */
+	unsigned char i_nlinks;
+	unsigned short i_zone[9];
+/* these are in memory also */
 	struct task_struct * i_wait;
 	unsigned long i_atime;
 	unsigned long i_ctime;
 	unsigned short i_dev;
-	unsigned short i_num;/*index in inode_table[32]*/
-	unsigned short i_count;/*被引用计数器*/
+	unsigned short i_num;
+	unsigned short i_count;
 	unsigned char i_lock;
 	unsigned char i_dirt;
 	unsigned char i_pipe;
@@ -132,27 +120,22 @@ struct file {
 	struct m_inode * f_inode;
 	off_t f_pos;
 };
-/*	block0		:mbr
-	block1 		:super block
-	block 2-9	:blocks contain "s_imap[]", bit map of inodes blocks(used=1, free=0)
-	block 10-17	:blocks contain "s_zmap[]", bit map of inodes blocks(used=1, free=0)
-*/
+
 struct super_block {
-	unsigned short s_ninodes;		//nr of inodes blocks
-	unsigned short s_nzones;		//nr of data zones	 ------------------------|
-	unsigned short s_imap_blocks;	//blocks contain "s_imap[]"       			 |
-	unsigned short s_zmap_blocks;	//blocks contain "s_zmap[]"		  			 |
-	unsigned short s_firstdatazone;//											 |
-	unsigned short s_log_zone_size;//data blocks= s_nzones << s_log_zone_size <--|
-								   //in "root file system"
+	unsigned short s_ninodes;
+	unsigned short s_nzones;
+	unsigned short s_imap_blocks;
+	unsigned short s_zmap_blocks;
+	unsigned short s_firstdatazone;
+	unsigned short s_log_zone_size;
 	unsigned long s_max_size;
 	unsigned short s_magic;
 /* These are only in memory */
-	struct buffer_head * s_imap[8];//bit map of inodes blocks(used=1, free=0)
-	struct buffer_head * s_zmap[8];//bit map of data blocks(used=1, free=0)
+	struct buffer_head * s_imap[8];
+	struct buffer_head * s_zmap[8];
 	unsigned short s_dev;
 	struct m_inode * s_isup;
-	struct m_inode * s_imount;		//指向该设备挂载点的inode（如/mnt/目录的inode）
+	struct m_inode * s_imount;
 	unsigned long s_time;
 	struct task_struct * s_wait;
 	unsigned char s_lock;
@@ -172,7 +155,7 @@ struct d_super_block {
 };
 
 struct dir_entry {
-	unsigned short inode; /*index in inode_table[32]*/
+	unsigned short inode;
 	char name[NAME_LEN];
 };
 

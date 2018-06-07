@@ -133,12 +133,8 @@ int sys_setup(void * BIOS)
 		hd[i*5].start_sect = 0;
 		hd[i*5].nr_sects = 0;
 	}
-	/*
-	0x301 - first partition on first drive etc
-	ROOT_DEV = 0x306, /dev/hd6
-	*/
 	for (drive=0 ; drive<NR_HD ; drive++) {
-		if (!(bh = bread(0x300 + drive*5,0))) {//read hd's first block(1KB)
+		if (!(bh = bread(0x300 + drive*5,0))) {
 			printk("Unable to read partition table of drive %d\n\r",
 				drive);
 			panic("");
@@ -148,21 +144,11 @@ int sys_setup(void * BIOS)
 			printk("Bad partition table on drive %d\n\r",drive);
 			panic("");
 		}
-		//MBR layout:  https://en.wikipedia.org/wiki/Master_boot_record#Sector_layout
-		/*	0x000 -	:Bootstrap code area
-			0x1BE - :Partition entry 1
-			0x1CE - :Partition entry 2
-			0x1DE - :Partition entry 3
-			0x1EE - :Partition entry 4
-			0x1FE - :Boot signature 0x55
-			0x1FF - :Boot signature 0xAA */
-			
-		p = 0x1BE + (void *)bh->b_data;//Partition entry 1 
+		p = 0x1BE + (void *)bh->b_data;
 		for (i=1;i<5;i++,p++) {
 			hd[i+5*drive].start_sect = p->start_sect;
 			hd[i+5*drive].nr_sects = p->nr_sects;
-		}//hd[1,2,3,4] hd1_partition1,2,3,4
-		 //hd[6,7,8,9] hd2_partition1,2,3,4
+		}
 		brelse(bh);
 	}
 	if (NR_HD)
@@ -340,7 +326,6 @@ void do_hd_request(void)
 		return;
 	}	
 	if (CURRENT->cmd == WRITE) {
-		//下发硬盘写命令，并设定硬盘ISP的主函数为&write_intr
 		hd_out(dev,nsect,sec,head,cyl,WIN_WRITE,&write_intr);
 		for(i=0 ; i<3000 && !(r=inb_p(HD_STATUS)&DRQ_STAT) ; i++)
 			/* nothing */ ;
@@ -350,7 +335,6 @@ void do_hd_request(void)
 		}
 		port_write(HD_DATA,CURRENT->buffer,256);
 	} else if (CURRENT->cmd == READ) {
-		//下发硬盘读命令，并设定硬盘ISP的主函数为&read_intr
 		hd_out(dev,nsect,sec,head,cyl,WIN_READ,&read_intr);
 	} else
 		panic("unknown hd-command");
@@ -360,6 +344,6 @@ void hd_init(void)
 {
 	blk_dev[MAJOR_NR].request_fn = DEVICE_REQUEST;
 	set_intr_gate(0x2E,&hd_interrupt);
-	outb_p(inb_p(0x21)&0xfb,0x21);//enable 8259-1.irq2 -> hd1
-	outb(inb_p(0xA1)&0xbf,0xA1);//enable 8259-1.irq14 -> hd2
+	outb_p(inb_p(0x21)&0xfb,0x21);
+	outb(inb_p(0xA1)&0xbf,0xA1);
 }

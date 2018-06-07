@@ -49,9 +49,6 @@
 #define ECC_ERR		0x40	/* ? */
 #define	BBD_ERR		0x80	/* ? */
 
-//https://en.wikipedia.org/wiki/Master_boot_record#PTE
-/* 16 Byte Partition entry
-*/
 struct partition {
 	unsigned char boot_ind;		/* 0x80 - active (unused) */
 	unsigned char head;		/* ? */

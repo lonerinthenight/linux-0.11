@@ -130,8 +130,8 @@ do_move:
 end_move:
 	mov	ax,#SETUPSEG	! right, forgot this at first. didn't work :-)
 	mov	ds,ax
-	lidt	idt_48		! load idtr with 0,0
-	lgdt	gdt_48		! load gdtr with whatever appropriate
+	lidt	idt_48		! load idt with 0,0
+	lgdt	gdt_48		! load gdt with whatever appropriate
 
 ! that was painless, now we enable A20
 
@@ -139,7 +139,7 @@ end_move:
 	mov	al,#0xD1		! command write
 	out	#0x64,al
 	call	empty_8042
-	mov	al,#0xDF		! A20 on http://www.win.tue.nl/~aeb/linux/kbd/A20.html
+	mov	al,#0xDF		! A20 on
 	out	#0x60,al
 	call	empty_8042
 
@@ -189,8 +189,8 @@ end_move:
 ! absolute address 0x00000, in 32-bit protected mode.
 
 	mov	ax,#0x0001	! protected mode (PE) bit
-	lmsw	ax		! This is it!                         gdt.entry1, gdt, RPL=00
-	jmpi	0,8		! jmp offset 0 of segment 8 (cs): 00000000 00001,   0,     00
+	lmsw	ax		! This is it!
+	jmpi	0,8		! jmp offset 0 of segment 8 (cs)
 
 ! This routine checks that the keyboard command queue is empty
 ! No timeout is used - if this hangs there is something wrong with
@@ -203,16 +203,13 @@ empty_8042:
 	ret
 
 gdt:
-	!gdt.entry0
 	.word	0,0,0,0		! dummy
 
-	!gdt.entry1
 	.word	0x07FF		! 8Mb - limit=2047 (2048*4096=8Mb)
 	.word	0x0000		! base address=0
 	.word	0x9A00		! code read/exec
 	.word	0x00C0		! granularity=4096, 386
 
-	!gdt.engry2
 	.word	0x07FF		! 8Mb - limit=2047 (2048*4096=8Mb)
 	.word	0x0000		! base address=0
 	.word	0x9200		! data read/write

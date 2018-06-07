@@ -205,13 +205,11 @@ static struct buffer_head * add_entry(struct m_inode * dir,
 			dir->i_ctime = CURRENT_TIME;
 		}
 		if (!de->inode) {
-			//找到空闲的dir_entry，更新文件夹内容的修改时间
 			dir->i_mtime = CURRENT_TIME;
-			//把“新文件名”写入“新的空闲dir_entry”
 			for (i=0; i < NAME_LEN ; i++)
 				de->name[i]=(i<namelen)?get_fs_byte(name+i):0;
 			bh->b_dirt = 1;
-			*res_dir = de;//返回“新的空闲dir_entry”
+			*res_dir = de;
 			return bh;
 		}
 		de++;
@@ -266,7 +264,7 @@ static struct m_inode * get_dir(const char * pathname)
 		idev = inode->i_dev;
 		brelse(bh);
 		iput(inode);
-		if (!(inode = iget(idev,inr)))//get final dir 's inode
+		if (!(inode = iget(idev,inr)))
 			return NULL;
 	}
 }
@@ -349,8 +347,6 @@ int open_namei(const char * pathname, int flag, int mode,
 		flag |= O_WRONLY;
 	mode &= 0777 & ~current->umask;
 	mode |= I_REGULAR;
-
-	//get dir_inode(/dev/) 
 	if (!(dir = dir_namei(pathname,&namelen,&basename)))
 		return -ENOENT;
 	if (!namelen) {			/* special case: '/usr/' etc */
@@ -361,10 +357,8 @@ int open_namei(const char * pathname, int flag, int mode,
 		iput(dir);
 		return -EISDIR;
 	}
-
-	//get dir_entry("/dev/tty0")
 	bh = find_entry(&dir,basename,namelen,&de);
-	if (!bh) {//没在目录项中找到指定的“文件”
+	if (!bh) {
 		if (!(flag & O_CREAT)) {
 			iput(dir);
 			return -ENOENT;
@@ -373,7 +367,6 @@ int open_namei(const char * pathname, int flag, int mode,
 			iput(dir);
 			return -EACCES;
 		}
-		//为“新文件”创建“inode”
 		inode = new_inode(dir->i_dev);
 		if (!inode) {
 			iput(dir);
@@ -396,18 +389,12 @@ int open_namei(const char * pathname, int flag, int mode,
 		*res_inode = inode;
 		return 0;
 	}
-
-
-
-	//get tty0's inode number and dev number
-	inr = de->inode;//dir_entry("/dev/tty0")->inode is the inode number of file tty0
+	inr = de->inode;
 	dev = dir->i_dev;
 	brelse(bh);
 	iput(dir);
 	if (flag & O_EXCL)
 		return -EEXIST;
-
-	//get tty0's inode struct
 	if (!(inode=iget(dev,inr)))
 		return -EACCES;
 	if ((S_ISDIR(inode->i_mode) && (flag & O_ACCMODE)) ||
@@ -415,8 +402,6 @@ int open_namei(const char * pathname, int flag, int mode,
 		iput(inode);
 		return -EPERM;
 	}
-
-	//change acess time
 	inode->i_atime = CURRENT_TIME;
 	if (flag & O_TRUNC)
 		truncate(inode);

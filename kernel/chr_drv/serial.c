@@ -25,24 +25,22 @@ extern void rs2_interrupt(void);
 
 static void init(int port)
 {
-	//https://blog.csdn.net/huangkangying/article/details/8070945
-
-	outb_p(0x80,port+3);	/*LCR: set DLAB(RBR, THR and IER) of line control reg */
-	outb_p(0x30,port);		/*THR: LS of divisor (48 -> 2400 bps */
-	outb_p(0x00,port+1);	/*IER: MS of divisor */
+	outb_p(0x80,port+3);	/* set DLAB of line control reg */
+	outb_p(0x30,port);	/* LS of divisor (48 -> 2400 bps */
+	outb_p(0x00,port+1);	/* MS of divisor */
 	outb_p(0x03,port+3);	/* reset DLAB */
-	outb_p(0x0b,port+4);	/*MCR: set DTR,RTS, OUT_2 */
-	outb_p(0x0d,port+1);	/*IER: enable all intrs but writes */
+	outb_p(0x0b,port+4);	/* set DTR,RTS, OUT_2 */
+	outb_p(0x0d,port+1);	/* enable all intrs but writes */
 	(void)inb(port);	/* read data port to reset things (?) */
 }
 
-void rs_init(void)//RS-232
+void rs_init(void)
 {
 	set_intr_gate(0x24,rs1_interrupt);
 	set_intr_gate(0x23,rs2_interrupt);
-	init(tty_table[1].read_q.data);//0x3f8
-	init(tty_table[2].read_q.data);//0x2f8
-	outb(inb_p(0x21)&0xE7,0x21);//enable 8259-1.irq4, 8259-1.irq3 -> rs1,rs2
+	init(tty_table[1].read_q.data);
+	init(tty_table[2].read_q.data);
+	outb(inb_p(0x21)&0xE7,0x21);
 }
 
 /*

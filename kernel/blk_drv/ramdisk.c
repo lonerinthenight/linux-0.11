@@ -81,7 +81,7 @@ void rd_load(void)
 		return;
 	printk("Ram disk: %d bytes, starting at 0x%x\n", rd_length,
 		(int) rd_start);
-	if (MAJOR(ROOT_DEV) != 2)// 1:ramdisk, 2:fd0, 3:hd
+	if (MAJOR(ROOT_DEV) != 2)
 		return;
 	bh = breada(ROOT_DEV,block+1,block,block+2,-1);
 	if (!bh) {
@@ -93,7 +93,7 @@ void rd_load(void)
 	if (s.s_magic != SUPER_MAGIC)
 		/* No ram disk image present, assume normal floppy boot */
 		return;
-	nblocks = s.s_nzones << s.s_log_zone_size;//all data blocks in "root file system"
+	nblocks = s.s_nzones << s.s_log_zone_size;
 	if (nblocks > (rd_length >> BLOCK_SIZE_BITS)) {
 		printk("Ram disk image too big!  (%d blocks, %d avail)\n", 
 			nblocks, rd_length >> BLOCK_SIZE_BITS);
@@ -121,5 +121,5 @@ void rd_load(void)
 		i++;
 	}
 	printk("\010\010\010\010\010done \n");
-	ROOT_DEV=0x0101;// make root_dev = RAMDISK
+	ROOT_DEV=0x0101;
 }

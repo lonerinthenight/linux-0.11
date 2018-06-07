@@ -16,12 +16,10 @@ int read_pipe(struct m_inode * inode, char * buf, int count)
 
 	while (count>0) {
 		while (!(size=PIPE_SIZE(*inode))) {
-			//管道是空的，没法读了，只能wake_up该管道上的进程赶紧写点什么
 			wake_up(&inode->i_wait);
-			//若果有人在写，则返回
 			if (inode->i_count != 2) /* are there any writers? */
 				return read;
-			sleep_on(&inode->i_wait);//current去睡觉了，并把位置让给inode->i_wait)
+			sleep_on(&inode->i_wait);
 		}
 		chars = PAGE_SIZE-PIPE_TAIL(*inode);
 		if (chars > count)
@@ -77,7 +75,6 @@ int sys_pipe(unsigned long * fildes)
 	int fd[2];
 	int i,j;
 
-	//获取2个空闲的file_table项
 	j=0;
 	for(i=0;j<2 && i<NR_FILE;i++)
 		if (!file_table[i].f_count)
@@ -86,9 +83,6 @@ int sys_pipe(unsigned long * fildes)
 		f[0]->f_count=0;
 	if (j<2)
 		return -1;
-
-	//task struct中获取2个空闲的filp，并指向上述file_table
-	//记录fd（filp数值的索引）
 	j=0;
 	for(i=0;j<2 && i<NR_OPEN;i++)
 		if (!current->filp[i]) {
@@ -101,8 +95,6 @@ int sys_pipe(unsigned long * fildes)
 		f[0]->f_count=f[1]->f_count=0;
 		return -1;
 	}
-
-	//生成管道i-node（i_size指向物理内存页，i_zone[0]为管道写计位器，i_zone[1]为管道读计位器）	
 	if (!(inode=get_pipe_inode())) {
 		current->filp[fd[0]] =
 			current->filp[fd[1]] = NULL;

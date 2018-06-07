@@ -169,9 +169,7 @@ int copy_page_tables(unsigned long from,unsigned long to,long size)
 		if (!(to_page_table = (unsigned long *) get_free_page()))
 			return -1;	/* Out of memory, see freeing */
 		*to_dir = ((unsigned long) to_page_table) | 7;
-		nr = (from==0)?0xA0:1024;//current == init0?
-		
-		//copy old process's page_table to new process, to make the same pfa
+		nr = (from==0)?0xA0:1024;
 		for ( ; nr-- > 0 ; from_page_table++,to_page_table++) {
 			this_page = *from_page_table;
 			if (!(1 & this_page))
@@ -364,29 +362,7 @@ static int share_page(unsigned long address)
 	return 0;
 }
 
-/*
-_page_fault中断堆栈示意图
-High Addr
---------------
-%ss
-%esp
-%eflags
-%cs
-%eip  
-error_code							
-%ecx								
-%edx								
-%ds									
-%es									
-%fs									
-%cr2  #  (function参数1)								
-%eax  # error code (function参数2)	
---------------
-Low Addr */
-
-void do_no_page(unsigned long error_code, 
-					  unsigned long address
-					  /*%cr2=页故障线性地址, eip[0] = ex.a_entry;*/)
+void do_no_page(unsigned long error_code,unsigned long address)
 {
 	int nr[4];
 	unsigned long tmp;
@@ -395,35 +371,26 @@ void do_no_page(unsigned long error_code,
 
 	address &= 0xfffff000;
 	tmp = address - current->start_code;
-
-	/*例如堆栈，直接分配*/
 	if (!current->executable || tmp >= current->end_data) {
 		get_empty_page(address);
 		return;
 	}
-	/*是否与其它进程共享物理页*/
 	if (share_page(tmp))
 		return;
-	
 	if (!(page = get_free_page()))
 		oom();
-
-	/* remember that 1 block is used for header */
-	//read the first 4 block number of the exec file
+/* remember that 1 block is used for header */
 	block = 1 + tmp/BLOCK_SIZE;
 	for (i=0 ; i<4 ; block++,i++)
 		nr[i] = bmap(current->executable,block);
-
-	//read first 4 block from RAMDISK into bh
 	bread_page(page,current->executable->i_dev,nr);
-	
 	i = tmp + 4096 - current->end_data;
 	tmp = page + 4096;
 	while (i-- > 0) {
 		tmp--;
 		*(char *)tmp = 0;
 	}
-	if (put_page(page/*physical page*/, address/*virtual addr*/))
+	if (put_page(page,address))
 		return;
 	free_page(page);
 	oom();
@@ -435,7 +402,7 @@ void mem_init(long start_mem, long end_mem)
 
 	HIGH_MEMORY = end_mem;
 	for (i=0 ; i<PAGING_PAGES ; i++)
-		mem_map[i] = USED;//[0-1MB) paged to pfa, [1MB - 16MB) have not page
+		mem_map[i] = USED;
 	i = MAP_NR(start_mem);
 	end_mem -= start_mem;
 	end_mem >>= 12;
