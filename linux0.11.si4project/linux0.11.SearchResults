@@ -1,0 +1,488 @@
+---- 0x21 Matches (18 in 7 files) ----
+console.c (kernel\chr_drv) line 52 : #define VIDEO_TYPE_EGAC		0x21	/* EGA/VGA in Color Mode	*/
+con_init in console.c (kernel\chr_drv) : 	set_trap_gate(0x21,&keyboard_interrupt);
+con_init in console.c (kernel\chr_drv) : 	outb_p(inb_p(0x21)&0xfd,0x21);//enable irq1 -> keyboard
+floppy_init in floppy.c (kernel\blk_drv) : 	outb(inb_p(0x21)&~0x40,0x21);//enable irq6 -> floppy
+hd_init in hd.c (kernel\blk_drv) : 	outb_p(inb_p(0x21)&0xfb,0x21);//enable irq2 -> hd1
+sched_init in sched.c (kernel) : 	outb(inb_p(0x21)&~0x01,0x21);//enable irq0 -> timer
+rs_init in serial.c (kernel\chr_drv) : 	outb(inb_p(0x21)&0xE7,0x21);//enable irq3,irq4 -> rs1,rs2
+setup.s (boot) line 160 : 	out	#0x21,al
+setup.s (boot) line 166 : 	out	#0x21,al
+setup.s (boot) line 172 : 	out	#0x21,al
+setup.s (boot) line 177 : 	out	#0x21,al
+trap_init in traps.c (kernel) : 	outb_p(inb_p(0x21)&0xfb,0x21);  //enable 8259-1.irq2 -> hd1
+---- 0x21 Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- _end Matches (37 in 6 files) ----
+breada in buffer.c (fs) : 	va_end(args);
+buffer.c (fs) line 348 : void buffer_init(long buffer_end)
+buffer_init in buffer.c (fs) : 	if (buffer_end == 1<<20)
+buffer_init in buffer.c (fs) : 		b = (void *) buffer_end;
+console.c (kernel\chr_drv) line 64 : static unsigned long	video_mem_end;		/* End of video RAM (sort of)	*/
+console.c (kernel\chr_drv) line 70 : static unsigned long	scr_end;	/* Used for EGA/VGA fast scroll	*/
+scrup in console.c (kernel\chr_drv) : 			scr_end += video_size_row;
+scrup in console.c (kernel\chr_drv) : 			if (scr_end > video_mem_end) {
+scrup in console.c (kernel\chr_drv) : 				scr_end -= origin-video_mem_start;
+scrup in console.c (kernel\chr_drv) : 					"D" (scr_end-video_size_row)
+csi_J in console.c (kernel\chr_drv) : 			count = (scr_end-pos)>>1;
+con_init in console.c (kernel\chr_drv) : 			video_mem_end = 0xb8000;
+con_init in console.c (kernel\chr_drv) : 			video_mem_end	= 0xb2000;
+con_init in console.c (kernel\chr_drv) : 			video_mem_end = 0xbc000;
+con_init in console.c (kernel\chr_drv) : 			video_mem_end = 0xba000;
+con_init in console.c (kernel\chr_drv) : 	scr_end	= video_mem_start + video_num_lines * video_size_row;
+fs.h (include\linux) line 31 : void buffer_init(long buffer_end);
+main.c (init) line 98 : static long memory_end = 0;
+main.c (init) line 99 : static long buffer_memory_end = 0;
+main in main.c (init) : 	memory_end = (1<<20) + (EXT_MEM_K<<10);
+main in main.c (init) : 	memory_end &= 0xfffff000;
+main in main.c (init) : 	if (memory_end > 16*1024*1024)
+main in main.c (init) : 		memory_end = 16*1024*1024;
+main in main.c (init) : 	if (memory_end > 12*1024*1024) 
+main in main.c (init) : 		buffer_memory_end = 4*1024*1024;
+main in main.c (init) : 	else if (memory_end > 6*1024*1024)
+main in main.c (init) : 		buffer_memory_end = 2*1024*1024;
+main in main.c (init) : 		buffer_memory_end = 1*1024*1024;
+main in main.c (init) : 	main_memory_start = buffer_memory_end;
+main in main.c (init) : 	mem_init(main_memory_start,memory_end);
+main in main.c (init) : 	buffer_init(buffer_memory_end);
+printf in main.c (init) : 	va_end(args);
+init in main.c (init) : 	printf("Free mem: %d bytes\n\r",memory_end-main_memory_start);
+printk in printk.c (kernel) : 	va_end(args);
+stdarg.h (include) line 21 : void va_end (va_list);		/* Defined in gnulib */
+stdarg.h (include) line 22 : #define va_end(AP)
+---- _end Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- system_call Matches (12 in 4 files) ----
+fork.c (kernel) line 9 :  * (see also system_call.s), and some misc functions ('verify_area').
+Makefile (kernel) line 27 : OBJS  = sched.o system_call.o traps.o asm.o fork.o \
+sched.c (kernel) line 51 : extern int system_call(void);
+sched_init in sched.c (kernel) : 	set_system_gate(0x80,&system_call);
+system_call.s (kernel) line 2 :  *  linux/kernel/system_call.s
+system_call.s (kernel) line 8 :  *  system_call.s  contains the system-call low-level handling routines.
+system_call.s (kernel) line 17 :  * Stack layout in 'ret_from_system_call':
+system_call.s (kernel) line 61 : nr_system_calls = 72
+system_call.s (kernel) line 67 : .globl _system_call,_sys_fork,_timer_interrupt,_sys_execve
+system_call.s (kernel) line 80 : _system_call:
+system_call.s (kernel) line 81 : 	cmpl $nr_system_calls-1,%eax
+system_call.s (kernel) line 178 : 	push %es		# into them. %fs is used by _system_call
+---- system_call Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- _sys_call_table Matches (1 in 1 files) ----
+system_call.s (kernel) line 94 : 	call _sys_call_table(,%eax,4)
+---- _sys_call_table Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- find_empty_process Matches (2 in 2 files) ----
+fork.c (kernel) line 135 : int find_empty_process(void)
+system_call.s (kernel) line 209 : 	call _find_empty_process
+---- find_empty_process Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- fork Matches (25 in 7 files) ----
+fork.c (kernel) line 2 :  *  linux/kernel/fork.c
+fork.c (kernel) line 8 :  *  'fork.c' contains the help-routines for the 'fork' system call
+fork.c (kernel) line 64 :  *  Ok, this is the main fork-routine. It copies the system process
+main.c (init) line 12 :  * we need this inline - forking from kernel space will result
+main.c (init) line 15 :  * main() use the stack at all after fork(). Thus, no function
+main.c (init) line 16 :  * calls - which means inline code for fork too, as otherwise we
+main.c (init) line 17 :  * would use the stack upon exit from 'fork()'.
+main.c (init) line 19 :  * Actually only pause and fork are needed inline, so that there
+main.c (init) line 23 : static inline _syscall0(int,fork)
+main in main.c (init) : 	if (!fork()) {		/* we count on this going ok */
+init in main.c (init) : 	if (!(pid=fork())) {
+init in main.c (init) : 		if ((pid=fork())<0) {
+Makefile (kernel) line 27 : OBJS  = sched.o system_call.o traps.o asm.o fork.o \
+Makefile (kernel) line 56 : fork.s fork.o : fork.c ../include/errno.h ../include/linux/sched.h \
+memory.c (mm) line 140 :  * function easier. It's used only by fork anyway.
+memory.c (mm) line 143 :  * fork(). Then we DONT want to copy a full page-directory entry, as
+sys.h (include\linux) line 3 : extern int sys_fork();
+sys.h (include\linux) line 74 : fn_ptr sys_call_table[] = { sys_setup, sys_exit, sys_fork, sys_read,
+system_call.s (kernel) line 67 : .globl _system_call,_sys_fork,_timer_interrupt,_sys_execve
+system_call.s (kernel) line 214 : _sys_fork:
+unistd.h (include) line 62 : #define __NR_fork	2
+unistd.h (include) line 210 : int fork(void);
+---- fork Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- setup Matches (57 in 11 files) ----
+bootsect.s (boot) line 13 : ! It then loads 'setup' directly after itself (0x90200), and the system
+bootsect.s (boot) line 34 : SETUPLEN = 4				! nr of setup-sectors
+bootsect.s (boot) line 37 : SETUPSEG = 0x9020			! setup starts here
+bootsect.s (boot) line 64 : ! load the setup-sectors directly after the bootblock.
+bootsect.s (boot) line 67 : load_setup:
+bootsect.s (boot) line 73 : 	jnc	ok_load_setup		! ok - continue
+bootsect.s (boot) line 77 : 	j	load_setup
+bootsect.s (boot) line 79 : ok_load_setup:
+bootsect.s (boot) line 136 : ! the setup-routine loaded directly after
+build.c (tools) line 11 :  * - setup: max 4 sectors of 8086 machine code, sets up system parm
+build.c (tools) line 40 : /* max nr of sectors of setup: don't change unless you also change
+usage in build.c (tools) : 	die("Usage: build bootsect setup system [rootdev] [> image]");
+main in build.c (tools) : 		die("Unable to open 'setup'");
+main in build.c (tools) : 		die("Unable to read header of 'setup'");
+main in build.c (tools) : 		die("Non-Minix header of 'setup'");
+main in build.c (tools) : 		die("Non-Minix header of 'setup'");
+main in build.c (tools) : 		die("Illegal data segment in 'setup'");
+main in build.c (tools) : 		die("Illegal bss in 'setup'");
+main in build.c (tools) : 		die("Non-Minix header of 'setup'");
+main in build.c (tools) : 		die("Illegal symbol table in 'setup'");
+main in build.c (tools) : 			" sectors - rewrite build/boot/setup");
+console.c (kernel\chr_drv) line 36 :  * These are set up by the setup-routine at boot-time:
+console.c (kernel\chr_drv) line 614 :  * Reads the information preserved by setup.s to determine the current display
+floppy.c (kernel\blk_drv) line 160 : static void setup_DMA(void)
+floppy.c (kernel\blk_drv) line 269 : inline void setup_rw_floppy(void)
+setup_rw_floppy in floppy.c (kernel\blk_drv) : 	setup_DMA();
+seek_interrupt in floppy.c (kernel\blk_drv) : 	setup_rw_floppy();
+transfer in floppy.c (kernel\blk_drv) : 		setup_rw_floppy();
+hd.c (kernel\blk_drv) line 71 : int sys_setup(void * BIOS)
+head.s (boot) line 25 : 	call setup_idt
+head.s (boot) line 26 : 	call setup_gdt
+head.s (boot) line 30 : 	mov %ax,%es		# reloaded in 'setup_gdt'
+head.s (boot) line 71 :  *  setup_idt
+head.s (boot) line 81 : setup_idt:
+head.s (boot) line 99 :  *  setup_gdt
+head.s (boot) line 108 : setup_gdt:
+head.s (boot) line 144 : 	jmp setup_paging
+head.s (boot) line 201 : setup_paging:
+main.c (init) line 25 : static inline _syscall1(int,setup,void *,BIOS)
+main.c (init) line 56 :  * This is set up by the setup-routine at boot-time
+main in main.c (init) :  * Interrupts are still disabled. Do necessary setups, then
+init in main.c (init) : 	setup((void *) &drive_info);
+Makefile line 41 : Image: boot/bootsect boot/setup tools/system tools/build
+Makefile line 42 : 	tools/build boot/bootsect boot/setup tools/system $(ROOT_DEV) > Image
+Makefile line 84 : boot/setup: boot/setup.s
+Makefile line 85 : 	$(AS86) -o boot/setup.o boot/setup.s
+Makefile line 86 : 	$(LD86) -s -o boot/setup boot/setup.o
+Makefile line 98 : 	rm -f Image System.map tmp_make core boot/bootsect boot/setup
+setup.s (boot) line 2 : !	setup.s		(C) 1991 Linus Torvalds
+setup.s (boot) line 4 : ! setup.s is responsible for getting the system data from the BIOS,
+setup.s (boot) line 6 : ! both setup.s and system has been loaded by the bootblock.
+sys.h (include\linux) line 1 : extern int sys_setup();
+sys.h (include\linux) line 74 : fn_ptr sys_call_table[] = { sys_setup, sys_exit, sys_fork, sys_read,
+unistd.h (include) line 60 : #define __NR_setup	0	/* used only by init, to get system going */
+---- setup Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- drive_info Matches (5 in 1 files) ----
+main.c (init) line 59 : #define DRIVE_INFO (*(struct drive_info *)0x90080)
+main.c (init) line 102 : struct drive_info { char dummy[32]; } drive_info;
+main in main.c (init) :  	drive_info = DRIVE_INFO;
+init in main.c (init) : 	setup((void *) &drive_info);
+---- drive_info Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- buffer_wait Matches (3 in 1 files) ----
+buffer.c (fs) line 33 : static struct task_struct * buffer_wait = NULL;
+getblk in buffer.c (fs) : 		sleep_on(&buffer_wait);
+brelse in buffer.c (fs) : 	wake_up(&buffer_wait);
+---- buffer_wait Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- ->request_fn Matches (1 in 1 files) ----
+add_request in ll_rw_blk.c (kernel\blk_drv) : 		(dev->request_fn)();
+---- ->request_fn Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- request_fn) Matches (3 in 2 files) ----
+blk_dev_struct in blk.h (kernel\blk_drv) : 	void (*request_fn)(void);
+add_request in ll_rw_blk.c (kernel\blk_drv) : 		(dev->request_fn)();
+ll_rw_block in ll_rw_blk.c (kernel\blk_drv) : 	!(blk_dev[major].request_fn)) {
+---- request_fn) Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- dup Matches (25 in 7 files) ----
+dup.c (lib) line 2 :  *  linux/lib/dup.c
+dup.c (lib) line 10 : _syscall1(int,dup,int,fd)
+fcntl.c (fs) line 18 : static int dupfd(unsigned int fd, unsigned int arg)
+fcntl.c (fs) line 36 : int sys_dup2(unsigned int oldfd, unsigned int newfd)
+sys_dup2 in fcntl.c (fs) : 	return dupfd(oldfd,newfd);
+fcntl.c (fs) line 42 : int sys_dup(unsigned int fildes)
+sys_dup in fcntl.c (fs) : 	return dupfd(fildes,0);
+sys_fcntl in fcntl.c (fs) : 			return dupfd(fd,arg);
+fcntl.h (include) line 23 : #define F_DUPFD		0	/* dup */
+init in main.c (init) : 	(void) dup(0);
+init in main.c (init) : 	(void) dup(0);
+init in main.c (init) : 			(void) dup(0);
+init in main.c (init) : 			(void) dup(0);
+Makefile (lib) line 27 : OBJS  = ctype.o _exit.o open.o close.o errno.o write.o dup.o setsid.o \
+Makefile (lib) line 52 : dup.s dup.o : dup.c ../include/unistd.h ../include/sys/stat.h \
+sys.h (include\linux) line 42 : extern int sys_dup();
+sys.h (include\linux) line 64 : extern int sys_dup2();
+sys.h (include\linux) line 81 : sys_rmdir, sys_dup, sys_pipe, sys_times, sys_prof, sys_brk, sys_setgid,
+sys.h (include\linux) line 84 : sys_uname, sys_umask, sys_chroot, sys_ustat, sys_dup2, sys_getppid,
+unistd.h (include) line 101 : #define __NR_dup	41
+unistd.h (include) line 123 : #define __NR_dup2	63
+unistd.h (include) line 200 : int dup(int fildes);
+unistd.h (include) line 248 : int dup2(int oldfd, int newfd);
+---- dup Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- do_hd Matches (12 in 3 files) ----
+blk.h (kernel\blk_drv) line 81 : #define DEVICE_INTR do_hd
+blk.h (kernel\blk_drv) line 82 : #define DEVICE_REQUEST do_hd_request
+hd_out in hd.c (kernel\blk_drv) : 	do_hd = intr_addr;
+read_intr in hd.c (kernel\blk_drv) : 		do_hd_request();
+read_intr in hd.c (kernel\blk_drv) : 		do_hd = &read_intr;
+read_intr in hd.c (kernel\blk_drv) : 	do_hd_request();
+write_intr in hd.c (kernel\blk_drv) : 		do_hd_request();
+write_intr in hd.c (kernel\blk_drv) : 		do_hd = &write_intr;
+write_intr in hd.c (kernel\blk_drv) : 	do_hd_request();
+recal_intr in hd.c (kernel\blk_drv) : 	do_hd_request();
+hd.c (kernel\blk_drv) line 308 : void do_hd_request(void)
+system_call.s (kernel) line 244 : 	xchgl _do_hd,%edx
+---- do_hd Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- DEVICE_INTR Matches (4 in 1 files) ----
+blk.h (kernel\blk_drv) line 72 : #define DEVICE_INTR do_floppy
+blk.h (kernel\blk_drv) line 81 : #define DEVICE_INTR do_hd
+blk.h (kernel\blk_drv) line 96 : #ifdef DEVICE_INTR
+blk.h (kernel\blk_drv) line 97 : void (*DEVICE_INTR)(void) = NULL;
+---- DEVICE_INTR Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- execve Matches (19 in 7 files) ----
+exec.c (fs) line 180 :  * 'do_execve()' executes a new program.
+exec.c (fs) line 182 : int do_execve(unsigned long * eip,long tmp,char * filename,
+do_execve in exec.c (fs) : 		panic("execve called from supervisor mode");
+execve.c (lib) line 2 :  *  linux/lib/execve.c
+execve.c (lib) line 10 : _syscall3(int,execve,const char *,file,char **,argv,char **,envp)
+main.c (init) line 13 :  * in NO COPY ON WRITE (!!!), until an execve is executed. This
+init in main.c (init) : 		execve("/bin/sh",argv_rc,envp_rc);//exec shell
+init in main.c (init) : 			_exit(execve("/bin/sh",argv,envp));
+Makefile (lib) line 28 : 	execve.o wait.o string.o malloc.o
+Makefile (lib) line 56 : execve.s execve.o : execve.c ../include/unistd.h ../include/sys/stat.h \
+sys.h (include\linux) line 12 : extern int sys_execve();
+sys.h (include\linux) line 77 : /*10-14*/sys_unlink, sys_execve, sys_chdir, sys_time, sys_mknod, 
+system_call.s (kernel) line 67 : .globl _system_call,_sys_fork,_timer_interrupt,_sys_execve
+system_call.s (kernel) line 206 : _sys_execve:
+system_call.s (kernel) line 209 : 	call _do_execve
+unistd.h (include) line 71 : #define __NR_execve	11
+unistd.h (include) line 201 : int execve(const char * filename, char ** argv, char ** envp);
+---- execve Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- page_fault Matches (4 in 2 files) ----
+page.s (mm) line 12 : .globl _page_fault
+page.s (mm) line 14 : _page_fault:
+traps.c (kernel) line 57 : void page_fault(void);
+trap_init in traps.c (kernel) : 	set_trap_gate(14,&page_fault);
+---- page_fault Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- segment_not_present Matches (6 in 2 files) ----
+asm.s (kernel) line 16 : .globl _invalid_TSS,_segment_not_present,_stack_segment
+asm.s (kernel) line 135 : _segment_not_present:
+asm.s (kernel) line 136 : 	pushl $_do_segment_not_present
+traps.c (kernel) line 54 : void segment_not_present(void);
+traps.c (kernel) line 159 : void do_segment_not_present(long esp,long error_code)
+trap_init in traps.c (kernel) : 	set_trap_gate(11,&segment_not_present);
+---- segment_not_present Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- do_hd_request Matches (7 in 2 files) ----
+blk.h (kernel\blk_drv) line 82 : #define DEVICE_REQUEST do_hd_request
+read_intr in hd.c (kernel\blk_drv) : 		do_hd_request();
+read_intr in hd.c (kernel\blk_drv) : 	do_hd_request();
+write_intr in hd.c (kernel\blk_drv) : 		do_hd_request();
+write_intr in hd.c (kernel\blk_drv) : 	do_hd_request();
+recal_intr in hd.c (kernel\blk_drv) : 	do_hd_request();
+hd.c (kernel\blk_drv) line 308 : void do_hd_request(void)
+---- do_hd_request Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- sys_pipe Matches (3 in 2 files) ----
+pipe.c (fs) line 71 : int sys_pipe(unsigned long * fildes)
+sys.h (include\linux) line 43 : extern int sys_pipe();
+sys.h (include\linux) line 83 : /*40-44*/sys_rmdir, sys_dup, sys_pipe, sys_times, sys_prof, 
+---- sys_pipe Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- _pipe Matches (21 in 6 files) ----
+m_inode in fs.h (include\linux) : 	unsigned char i_pipe;
+fs.h (include\linux) line 201 : extern struct m_inode * get_pipe_inode(void);
+sync_inodes in inode.c (fs) : 		if (inode->i_dirt && !inode->i_pipe)
+iput in inode.c (fs) : 	if (inode->i_pipe) {
+iput in inode.c (fs) : 		inode->i_pipe=0;
+inode.c (fs) line 233 : struct m_inode * get_pipe_inode(void)
+get_pipe_inode in inode.c (fs) : 	inode->i_pipe = 1;
+pipe.c (fs) line 13 : int read_pipe(struct m_inode * inode, char * buf, int count)
+pipe.c (fs) line 41 : int write_pipe(struct m_inode * inode, char * buf, int count)
+pipe.c (fs) line 71 : int sys_pipe(unsigned long * fildes)
+sys_pipe in pipe.c (fs) : 	if (!(inode=get_pipe_inode())) {
+read_write.c (fs) line 16 : extern int read_pipe(struct m_inode * inode, char * buf, int count);
+read_write.c (fs) line 17 : extern int write_pipe(struct m_inode * inode, char * buf, int count);
+sys_lseek in read_write.c (fs) : 	if (file->f_inode->i_pipe)
+sys_read in read_write.c (fs) : 	if (inode->i_pipe){
+sys_read in read_write.c (fs) : 		return (file->f_mode&1)?read_pipe(inode,buf,count):-EIO;
+sys_write in read_write.c (fs) : 	if (inode->i_pipe)
+sys_write in read_write.c (fs) : 		return (file->f_mode&2)?write_pipe(inode,buf,count):-EIO;
+sys.h (include\linux) line 43 : extern int sys_pipe();
+sys.h (include\linux) line 83 : /*40-44*/sys_rmdir, sys_dup, sys_pipe, sys_times, sys_prof, 
+unistd.h (include) line 102 : #define __NR_pipe	42
+---- _pipe Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- sys_pipe Matches (3 in 2 files) ----
+pipe.c (fs) line 71 : int sys_pipe(unsigned long * fildes)
+sys.h (include\linux) line 43 : extern int sys_pipe();
+sys.h (include\linux) line 83 : /*40-44*/sys_rmdir, sys_dup, sys_pipe, sys_times, sys_prof, 
+---- sys_pipe Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- sys_signal Matches (3 in 2 files) ----
+signal.c (kernel) line 48 : int sys_signal(int signum, long handler, long restorer)
+sys.h (include\linux) line 49 : extern int sys_signal();
+sys.h (include\linux) line 84 : sys_brk, sys_setgid, sys_getgid, sys_signal, sys_geteuid, 
+---- sys_signal Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
+---- restorer Matches (6 in 3 files) ----
+signal.c (kernel) line 48 : int sys_signal(int signum, long handler, long restorer)
+sys_signal in signal.c (kernel) : 	tmp.sa_restorer = (void (*)(void)) restorer;
+do_signal in signal.c (kernel) : 	put_fs_long((long) sa->sa_restorer,tmp_esp++);
+sigaction in signal.h (include) : 	void (*sa_restorer)(void);
+system_call.s (kernel) line 59 : sa_restorer = 12
+---- restorer Search Errors Encountered (7) ----
+The following 7 files could not be processed:
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.siproj : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_sym : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xab : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xad : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xm : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsb : File could not be opened.
+D:\Project\11GCP1410SS\trunk\OemPkg\file\AptioVWorkflowChart\linux-0.11\linux0.11.si4project\linux0.11.sip_xsd : File could not be opened.
