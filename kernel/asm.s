@@ -94,6 +94,30 @@ _irq13:
 	popl %eax
 	jmp _coprocessor_error
 
+/*
+硬件中断堆栈示意图
+High Addr
+--------------
+%ss
+%esp
+%eflags
+%cs
+%eip  <-----------------------------|
+error_code							|
+ISP function						|
+%ecx								|
+%edx								|
+%edi								|
+%esi								|
+%ebp								|
+%ds									|
+%es									|
+%fs									|
+%eax  # error code (function参数2)	|
+%eax  # offset(function参数1) ------|
+--------------
+Low Addr
+*/
 _double_fault:
 	pushl $_do_double_fault
 error_code:
@@ -107,14 +131,14 @@ error_code:
 	push %ds
 	push %es
 	push %fs
-	pushl %eax			# error code
-	lea 44(%esp),%eax		# offset
+	pushl %eax				# error code (function参数2)
+	lea 44(%esp),%eax		# offset(function参数1)
 	pushl %eax
 	movl $0x10,%eax
 	mov %ax,%ds
 	mov %ax,%es
 	mov %ax,%fs
-	call *%ebx
+	call *%ebx		#function(long offset, long error_code)
 	addl $8,%esp
 	pop %fs
 	pop %es

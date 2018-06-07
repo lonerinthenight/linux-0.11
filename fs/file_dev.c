@@ -22,8 +22,8 @@ int file_read(struct m_inode * inode, struct file * filp, char * buf, int count)
 	if ((left=count)<=0)
 		return 0;
 	while (left) {
-		if (nr = bmap(inode,(filp->f_pos)/BLOCK_SIZE)) {
-			if (!(bh=bread(inode->i_dev,nr)))
+		if (nr = bmap(inode,(filp->f_pos)/BLOCK_SIZE)) {//根据当前文件的位置(f_pos)，获取数据所在磁盘的block_num
+			if (!(bh=bread(inode->i_dev,nr)))//指定block_num的数据读到buffer
 				break;
 		} else
 			bh = NULL;
@@ -58,11 +58,11 @@ int file_write(struct m_inode * inode, struct file * filp, char * buf, int count
  * but so what. That way leads to madness anyway.
  */
 	if (filp->f_flags & O_APPEND)
-		pos = inode->i_size;
+		pos = inode->i_size;/*追加写*/
 	else
-		pos = filp->f_pos;
+		pos = filp->f_pos;/*从指定位置pos写*/
 	while (i<count) {
-		if (!(block = create_block(inode,pos/BLOCK_SIZE)))
+		if (!(block = create_block(inode,pos/BLOCK_SIZE)))//获取pos所在block的block_num
 			break;
 		if (!(bh=bread(inode->i_dev,block)))
 			break;

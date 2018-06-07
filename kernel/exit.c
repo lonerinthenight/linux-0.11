@@ -105,6 +105,8 @@ int do_exit(long code)
 
 	free_page_tables(get_base(current->ldt[1]),get_limit(0x0f));
 	free_page_tables(get_base(current->ldt[2]),get_limit(0x17));
+
+	//孩子改爸，新爸爸给死孩子收尸
 	for (i=0 ; i<NR_TASKS ; i++)
 		if (task[i] && task[i]->father == current->pid) {
 			task[i]->father = 1;
@@ -112,9 +114,11 @@ int do_exit(long code)
 				/* assumption task[1] is always init */
 				(void) send_sig(SIGCHLD, task[1], 1);
 		}
+	//关闭已打开文件
 	for (i=0 ; i<NR_OPEN ; i++)
 		if (current->filp[i])
 			sys_close(i);
+	//pwd、root、exec i-node回写到硬盘
 	iput(current->pwd);
 	current->pwd=NULL;
 	iput(current->root);
@@ -125,10 +129,13 @@ int do_exit(long code)
 		tty_table[current->tty].pgrp = 0;
 	if (last_task_used_math == current)
 		last_task_used_math = NULL;
+
 	if (current->leader)
 		kill_session();
+
 	current->state = TASK_ZOMBIE;
 	current->exit_code = code;
+	
 	tell_father(current->father);
 	schedule();
 	return (-1);	/* just to suppress warnings */
@@ -162,6 +169,8 @@ repeat:
 			if ((*p)->pgrp != -pid)
 				continue;
 		}
+		
+		//child found
 		switch ((*p)->state) {
 			case TASK_STOPPED:
 				if (!(options & WUNTRACED))
@@ -181,7 +190,9 @@ repeat:
 				continue;
 		}
 	}
+
 	if (flag) {
+		//child's status is RUNNING, so schedule()
 		if (options & WNOHANG)
 			return 0;
 		current->state=TASK_INTERRUPTIBLE;

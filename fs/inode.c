@@ -78,6 +78,8 @@ static int _bmap(struct m_inode * inode,int block,int create)
 		panic("_bmap: block<0");
 	if (block >= 7+512+512*512)
 		panic("_bmap: block>big");
+
+	//读取文件第0到6个Blocks
 	if (block<7) {
 		if (create && !inode->i_zone[block])
 			if (inode->i_zone[block]=new_block(inode->i_dev)) {
@@ -86,6 +88,7 @@ static int _bmap(struct m_inode * inode,int block,int create)
 			}
 		return inode->i_zone[block];
 	}
+	//读取文件第7到512+6个Blocks
 	block -= 7;
 	if (block<512) {
 		if (create && !inode->i_zone[7])
@@ -106,6 +109,8 @@ static int _bmap(struct m_inode * inode,int block,int create)
 		brelse(bh);
 		return i;
 	}
+
+	//读取文件第512+7到6+512+512*512个Blocks
 	block -= 512;
 	if (create && !inode->i_zone[8])
 		if (inode->i_zone[8]=new_block(inode->i_dev)) {
@@ -229,8 +234,11 @@ struct m_inode * get_pipe_inode(void)
 {
 	struct m_inode * inode;
 
+	//从 inode_table 中获取空闲的inode
 	if (!(inode = get_empty_inode()))
 		return NULL;
+	
+	//为该inode申请一个空闲的物理内存页
 	if (!(inode->i_size=get_free_page())) {
 		inode->i_count = 0;
 		return NULL;
@@ -241,12 +249,14 @@ struct m_inode * get_pipe_inode(void)
 	return inode;
 }
 
-struct m_inode * iget(int dev,int nr)
+struct m_inode * iget(int dev/*dev number*/,int nr/*the number of inodes*/)
 {
 	struct m_inode * inode, * empty;
 
 	if (!dev)
 		panic("iget with dev==0");
+
+	//rquest inode
 	empty = get_empty_inode();
 	inode = inode_table;
 	while (inode < NR_INODE+inode_table) {
@@ -284,9 +294,13 @@ struct m_inode * iget(int dev,int nr)
 	}
 	if (!empty)
 		return (NULL);
+
+	//init inode
 	inode=empty;
 	inode->i_dev = dev;
 	inode->i_num = nr;
+
+	//init inode's d-inode by reading super_block->inode_block from RAMDISK
 	read_inode(inode);
 	return inode;
 }

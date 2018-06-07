@@ -69,7 +69,9 @@ int sync_dev(int dev)
 		if (bh->b_dev == dev && bh->b_dirt)
 			ll_rw_block(WRITE,bh);
 	}
+	
 	sync_inodes();
+	
 	bh = start_buffer;
 	for (i=0 ; i<NR_BUFFERS ; i++,bh++) {
 		if (bh->b_dev != dev)
@@ -78,6 +80,7 @@ int sync_dev(int dev)
 		if (bh->b_dev == dev && bh->b_dirt)
 			ll_rw_block(WRITE,bh);
 	}
+	
 	return 0;
 }
 
@@ -273,7 +276,7 @@ struct buffer_head * bread(int dev,int block)
 	if (bh->b_uptodate)
 		return bh;
 	ll_rw_block(READ,bh);
-	wait_on_buffer(bh);
+	wait_on_buffer(bh);//go to sleep,and wait for bh ready
 	if (bh->b_uptodate)
 		return bh;
 	brelse(bh);

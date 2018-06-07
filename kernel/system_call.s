@@ -83,29 +83,34 @@ _system_call:
 	push %ds
 	push %es
 	push %fs
+	
 	pushl %edx
-	pushl %ecx		# push %ebx,%ecx,%edx as parameters
-	pushl %ebx		# to the system call
+	pushl %ecx			# push %ebx,%ecx,%edx as parameters
+	pushl %ebx			# to the system call
+	
 	movl $0x10,%edx		# set up ds,es to kernel space
 	mov %dx,%ds
 	mov %dx,%es
 	movl $0x17,%edx		# fs points to local data space
 	mov %dx,%fs
+	
 	call _sys_call_table(,%eax,4)
-	pushl %eax
+	pushl %eax				#sys_call return value
 	movl _current,%eax
 	cmpl $0,state(%eax)		# state
-	jne reschedule
+	jne reschedule			#after return, reschedule task(if current not RUNNING)
 	cmpl $0,counter(%eax)		# counter
 	je reschedule
 ret_from_sys_call:
 	movl _current,%eax		# task[0] cannot have signals
 	cmpl _task,%eax
-	je 3f
+	je 3f					#if init0(task[0])
 	cmpw $0x0f,CS(%esp)		# was old code segment supervisor ?
 	jne 3f
 	cmpw $0x17,OLDSS(%esp)		# was stack segment = 0x17 ?
 	jne 3f
+
+	#若从用户态调用 sys_call，则do_signal
 	movl signal(%eax),%ebx
 	movl blocked(%eax),%ecx
 	notl %ecx
@@ -114,18 +119,24 @@ ret_from_sys_call:
 	je 3f
 	btrl %ecx,%ebx
 	movl %ebx,signal(%eax)
-	incl %ecx
+	incl %ecx				#because signal begins with 1
 	pushl %ecx
 	call _do_signal
+
+	#pop signr to eax	
 	popl %eax
-3:	popl %eax
+
+	#pop to <sa->sa_handler>'s / <caller of sys_call>'s (eax, ebx, ecx, edx, fs, es, ds)
+3:	popl %eax	#sys_call return value
 	popl %ebx
 	popl %ecx
 	popl %edx
 	pop %fs
 	pop %es
 	pop %ds
-	iret
+
+	#pop to <sa->sa_handler>'s / <caller of sys_call>'s (eip, cs, eflags, esp, ss)
+	iret	
 
 .align 2
 _coprocessor_error:
@@ -199,7 +210,7 @@ _timer_interrupt:
 .align 2
 _sys_execve:
 	lea EIP(%esp),%eax
-	pushl %eax
+	pushl %eax			#start here,after return
 	call _do_execve
 	addl $4,%esp
 	ret
@@ -208,7 +219,7 @@ _sys_execve:
 _sys_fork:
 	call _find_empty_process
 	testl %eax,%eax
-	js 1f
+	js 1f			#if( %eax < 0) return fail;
 	push %gs
 	pushl %esi
 	pushl %edi

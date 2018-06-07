@@ -23,8 +23,8 @@ struct stat {
 #define S_IFDIR  0040000
 #define S_IFCHR  0020000
 #define S_IFIFO  0010000
-#define S_ISUID  0004000
-#define S_ISGID  0002000
+#define S_ISUID  0004000 /*Is set_uid -> set file_uid as euid*/
+#define S_ISGID  0002000 /*Is set_gid -> set file_gid as egid*/
 #define S_ISVTX  0001000
 
 #define S_ISREG(m)	(((m) & S_IFMT) == S_IFREG)

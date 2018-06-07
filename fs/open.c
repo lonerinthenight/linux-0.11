@@ -142,18 +142,27 @@ int sys_open(const char * filename,int flag,int mode)
 	int i,fd;
 
 	mode &= 0777 & ~current->umask;
+	
+	//get next free fd of current process
 	for(fd=0 ; fd<NR_OPEN ; fd++)
 		if (!current->filp[fd])
 			break;
 	if (fd>=NR_OPEN)
 		return -EINVAL;
+
 	current->close_on_exec &= ~(1<<fd);
+
+	//request "unused file_table"
 	f=0+file_table;
 	for (i=0 ; i<NR_FILE ; i++,f++)
 		if (!f->f_count) break;
 	if (i>=NR_FILE)
 		return -EINVAL;
+
+	//this is "/dev/tty0" 's struct_file 
 	(current->filp[fd]=f)->f_count++;
+
+	//get "/dev/tty0" 's inode from RAMDISK
 	if ((i=open_namei(filename,flag,mode,&inode))<0) {
 		current->filp[fd]=NULL;
 		f->f_count=0;
@@ -176,6 +185,8 @@ int sys_open(const char * filename,int flag,int mode)
 /* Likewise with block-devices: check for floppy_change */
 	if (S_ISBLK(inode->i_mode))
 		check_disk_change(inode->i_zone[0]);
+
+	//fill file_table
 	f->f_mode = inode->i_mode;
 	f->f_flags = flag;
 	f->f_count = 1;

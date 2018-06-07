@@ -67,8 +67,8 @@ struct task_struct * task[NR_TASKS] = {&(init_task.task), };
 long user_stack [ PAGE_SIZE>>2 ] ;
 
 struct {
-	long * a;
-	short b;
+	long * a;//esp
+	short b; //ss selector
 	} stack_start = { & user_stack [PAGE_SIZE>>2] , 0x10 };
 /*
  *  'math_state_restore()' saves the current math information in the
@@ -389,8 +389,8 @@ void sched_init(void)
 
 	if (sizeof(struct sigaction) != 16)
 		panic("Struct sigaction MUST be 16 bytes");
-	set_tss_desc(gdt+FIRST_TSS_ENTRY,&(init_task.task.tss));
-	set_ldt_desc(gdt+FIRST_LDT_ENTRY,&(init_task.task.ldt));
+	set_tss_desc(gdt+FIRST_TSS_ENTRY,&(init_task.task.tss));//code seg
+	set_ldt_desc(gdt+FIRST_LDT_ENTRY,&(init_task.task.ldt));//data seg
 	p = gdt+2+FIRST_TSS_ENTRY;
 	for(i=1;i<NR_TASKS;i++) {
 		task[i] = NULL;
@@ -399,14 +399,28 @@ void sched_init(void)
 		p->a=p->b=0;
 		p++;
 	}
-/* Clear NT, so that we won't have troubles with that later on */
+/* Clear NT(Nested Task Flag), so that we won't have troubles with that later on */
 	__asm__("pushfl ; andl $0xffffbfff,(%esp) ; popfl");
 	ltr(0);
 	lldt(0);
-	outb_p(0x36,0x43);		/* binary, mode 3, LSB/MSB, ch 0 */
+	/*program 8253 Timer0 chip
+	
+	040H  timer 0 TOD clock 	 036H mode 3		 0=65536   (18.2Hz)
+	041H  timer 1 DMA refresh	 054H mode 2		 12H=18    (66 kHz)
+	042H  timer 2 Speaker tone	 0B6H mode 3		 553H=1331 (896 Hz sq.wave)
+	043H  control word register for channels 0-2
+
+	044H  counter 3 
+	047H  control word register  for channel 3 */
+	
+	/*ch0: count in binary, mode 3(square wave generator), LSB/MSB */
+	outb_p(0x36,0x43);	
+
+	//set LATCH to timer0, when LATCH count down to 0, triger a timer intr
 	outb_p(LATCH & 0xff , 0x40);	/* LSB */
 	outb(LATCH >> 8 , 0x40);	/* MSB */
+	
 	set_intr_gate(0x20,&timer_interrupt);
-	outb(inb_p(0x21)&~0x01,0x21);
+	outb(inb_p(0x21)&~0x01,0x21);//enable 8259-1.irq0 -> timer
 	set_system_gate(0x80,&system_call);
 }

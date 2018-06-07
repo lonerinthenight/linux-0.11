@@ -63,13 +63,24 @@ int sys_read(unsigned int fd,char * buf,int count)
 		return 0;
 	verify_area(buf,count);
 	inode = file->f_inode;
-	if (inode->i_pipe)
+
+	if (inode->i_pipe){
 		return (file->f_mode&1)?read_pipe(inode,buf,count):-EIO;
-	if (S_ISCHR(inode->i_mode))
-		return rw_char(READ,inode->i_zone[0],buf,count,&file->f_pos);
-	if (S_ISBLK(inode->i_mode))
+	}
+
+	if (S_ISCHR(inode->i_mode)){
+		//第二次执行/bin/sh后，从tty0设备中读取用户输入命令
+		//wr_char将把sh进程设置成interruptable。
+		return rw_char(READ,  inode->i_zone[0],buf,count, &file->f_pos);
+	}
+
+	if (S_ISBLK(inode->i_mode)){
 		return block_read(inode->i_zone[0],&file->f_pos,buf,count);
+	}
+	
 	if (S_ISDIR(inode->i_mode) || S_ISREG(inode->i_mode)) {
+		//第一次执行/bin/sh后，从标准输入读取"/etc/rc"，并执行其中命令。
+		//读完后，“进程2-sh”将退出。
 		if (count+file->f_pos > inode->i_size)
 			count = inode->i_size - file->f_pos;
 		if (count<=0)

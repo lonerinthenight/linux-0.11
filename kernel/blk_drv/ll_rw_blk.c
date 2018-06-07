@@ -29,9 +29,10 @@ struct task_struct * wait_for_request = NULL;
  *	do_request-address
  *	next-request
  */
+ //block device table
 struct blk_dev_struct blk_dev[NR_BLK_DEV] = {
 	{ NULL, NULL },		/* no_dev */
-	{ NULL, NULL },		/* dev mem */
+	{ NULL, NULL },		/* dev mem/rd */
 	{ NULL, NULL },		/* dev fd */
 	{ NULL, NULL },		/* dev hd */
 	{ NULL, NULL },		/* dev ttyx */
@@ -72,6 +73,9 @@ static void add_request(struct blk_dev_struct * dev, struct request * req)
 	if (!(tmp = dev->current_request)) {
 		dev->current_request = req;
 		sti();
+		//下发硬盘读/写命令
+		//blk_dev[MAJOR_NR].request_fn = DEVICE_REQUEST;
+		//DEVICE_REQUEST = do_hd_request, do_fd_request, do_rd_request
 		(dev->request_fn)();
 		return;
 	}
@@ -159,7 +163,7 @@ void blk_dev_init(void)
 	int i;
 
 	for (i=0 ; i<NR_REQUEST ; i++) {
-		request[i].dev = -1;
+		request[i].dev = -1;//no request
 		request[i].next = NULL;
 	}
 }
